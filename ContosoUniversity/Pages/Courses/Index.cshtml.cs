@@ -10,15 +10,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ContosoUniversity.Pages.Courses;
 
-public class Index : PageModel
+public class Index(IMediator mediator) : PageModel
 {
-    private readonly IMediator _mediator;
-
-    public Index(IMediator mediator) => _mediator = mediator;
-
     public Result Data { get; private set; }
 
-    public async Task OnGetAsync() => Data = await _mediator.Send(new Query());
+    public async Task OnGetAsync() => Data = await mediator.Send(new Query());
 
     public record Query : IRequest<Result>
     {
