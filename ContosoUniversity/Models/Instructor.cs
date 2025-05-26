@@ -30,7 +30,7 @@ public class Instructor : IEntity
     public ICollection<CourseAssignment> CourseAssignments { get; private set; } = new List<CourseAssignment>();
     public OfficeAssignment OfficeAssignment { get; private set; }
 
-    public void Handle(CreateEdit.Command message,
+    public void UpdateDetails(CreateEdit.Command message,
         IEnumerable<Course> courses)
     {
         UpdateDetails(message);

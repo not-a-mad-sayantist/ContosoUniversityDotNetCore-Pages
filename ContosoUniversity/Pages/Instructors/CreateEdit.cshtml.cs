@@ -116,17 +116,9 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class QueryHandler : IRequestHandler<Query, Command>
+    public class QueryHandler(SchoolContext db, IConfigurationProvider configuration) 
+        : IRequestHandler<Query, Command>
     {
-        private readonly SchoolContext _db;
-        private readonly IConfigurationProvider _configuration;
-
-        public QueryHandler(SchoolContext db, IConfigurationProvider configuration)
-        {
-            _db = db;
-            _configuration = configuration;
-        }
-
         public async Task<Command> Handle(Query message, CancellationToken token)
         {
             Command model;
@@ -136,14 +128,14 @@ public class CreateEdit : PageModel
             }
             else
             {
-                model = await _db.Instructors
+                model = await db.Instructors
                     .Where(i => i.Id == message.Id)
-                    .ProjectTo<Command>(_configuration)
+                    .ProjectTo<Command>(configuration)
                     .SingleOrDefaultAsync(token);
             }
 
             var instructorCourses = new HashSet<int>(model.CourseAssignments.Select(c => c.CourseId));
-            var viewModel = _db.Courses.Select(course => new Command.AssignedCourseData
+            var viewModel = db.Courses.Select(course => new Command.AssignedCourseData
             {
                 CourseId = course.Id,
                 Title = course.Title,
@@ -156,34 +148,30 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class CommandHandler : IRequestHandler<Command, int>
+    public class CommandHandler(SchoolContext db) : IRequestHandler<Command, int>
     {
-        private readonly SchoolContext _db;
-
-        public CommandHandler(SchoolContext db) => _db = db;
-
         public async Task<int> Handle(Command message, CancellationToken token)
         {
             Instructor instructor;
             if (message.Id == null)
             {
                 instructor = new Instructor();
-                await _db.Instructors.AddAsync(instructor, token);
+                await db.Instructors.AddAsync(instructor, token);
             }
             else
             {
-                instructor = await _db.Instructors
+                instructor = await db.Instructors
                     .Include(i => i.OfficeAssignment)
                     .Include(i => i.CourseAssignments)
                     .Where(i => i.Id == message.Id)
                     .SingleAsync(token);
             }
 
-            var courses = await _db.Courses.ToListAsync(token);
+            var courses = await db.Courses.ToListAsync(token);
 
-            instructor.Handle(message, courses);
+            instructor.UpdateDetails(message, courses);
 
-            await _db.SaveChangesAsync(token);
+            await db.SaveChangesAsync(token);
 
             return instructor.Id;
         }

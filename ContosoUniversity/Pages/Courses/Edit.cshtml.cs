@@ -94,7 +94,7 @@ public class Edit : PageModel
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
-            var course = await _db.Courses.FindAsync(request.Id);
+            var course = await _db.Courses.FindAsync([request.Id], cancellationToken);
 
             course.Title = request.Title;
             course.Department = request.Department;
