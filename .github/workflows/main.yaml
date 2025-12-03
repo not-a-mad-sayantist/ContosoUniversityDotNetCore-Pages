@@ -15,7 +15,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -24,27 +24,23 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Setup dotnet 6.0
-      uses: actions/setup-dotnet@v1
+    - name: Setup dotnet 10.0
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.100'
-
-    - name: Setup Required Build Dependencies
-      run: pwsh .\setup.ps1
+        dotnet-version: '10.0.x'
 
     - name: Build and Test
       shell: pwsh
-      run: |
-        invoke-psake ci -properties ${'version':'${{ steps.gitversion.outputs.semVer }}'}
+      run: ./Build.ps1
 
     - name: Upload Website Artifact
       uses: actions/upload-artifact@v1
       with:
         name: website
-        path: publish
+        path: artifacts/publish
 
     - name: Upload Test Result Artifact
       uses: actions/upload-artifact@v1
       with:
         name: test-results
-        path: TestResults
+        path: artifacts/TestResults
