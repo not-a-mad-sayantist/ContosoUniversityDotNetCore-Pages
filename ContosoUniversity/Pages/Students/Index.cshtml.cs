@@ -20,9 +20,21 @@ public class Index : PageModel
 
     public Result Data { get; private set; }
 
-    public async Task OnGetAsync(string sortOrder,
-        string currentFilter, string searchString, int? pageIndex)
-        => Data = await _mediator.Send(new Query { CurrentFilter = currentFilter, Page = pageIndex, SearchString = searchString, SortOrder = sortOrder});
+    public async Task OnGetAsync(
+        string sortOrder,
+        string currentFilter,
+        string searchString,
+        int? pageIndex
+    ) =>
+        Data = await _mediator.Send(
+            new Query
+            {
+                CurrentFilter = currentFilter,
+                Page = pageIndex,
+                SearchString = searchString,
+                SortOrder = sortOrder,
+            }
+        );
 
     public record Query : IRequest<Result>
     {
@@ -46,6 +58,7 @@ public class Index : PageModel
     public record Model
     {
         public int Id { get; init; }
+
         [Display(Name = "First Name")]
         public string FirstMidName { get; init; }
         public string LastName { get; init; }
@@ -76,8 +89,9 @@ public class Index : PageModel
             IQueryable<Student> students = _db.Students;
             if (!string.IsNullOrEmpty(searchString))
             {
-                students = students.Where(s => s.LastName.Contains(searchString)
-                                               || s.FirstMidName.Contains(searchString));
+                students = students.Where(s =>
+                    s.LastName.Contains(searchString) || s.FirstMidName.Contains(searchString)
+                );
             }
 
             students = message.SortOrder switch
@@ -85,7 +99,7 @@ public class Index : PageModel
                 "name_desc" => students.OrderByDescending(s => s.LastName),
                 "Date" => students.OrderBy(s => s.EnrollmentDate),
                 "date_desc" => students.OrderByDescending(s => s.EnrollmentDate),
-                _ => students.OrderBy(s => s.LastName)
+                _ => students.OrderBy(s => s.LastName),
             };
 
             int pageSize = 3;
@@ -102,8 +116,8 @@ public class Index : PageModel
                 DateSortParm = message.SortOrder == "Date" ? "date_desc" : "Date",
                 CurrentFilter = searchString,
                 SearchString = searchString,
-                Results = results
-            };      
+                Results = results,
+            };
 
             return model;
         }

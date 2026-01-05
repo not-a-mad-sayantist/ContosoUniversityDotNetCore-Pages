@@ -42,6 +42,7 @@ public class Details : PageModel
         public int? Id { get; init; }
 
         public string LastName { get; init; }
+
         [Display(Name = "First Name")]
         public string FirstMidName { get; init; }
 
@@ -68,10 +69,10 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> Handle(Query message, CancellationToken token) => _db
-            .Instructors
-            .Where(i => i.Id == message.Id)
-            .ProjectTo<Model>(_configuration)
-            .SingleOrDefaultAsync(token);
+        public Task<Model> Handle(Query message, CancellationToken token) =>
+            _db
+                .Instructors.Where(i => i.Id == message.Id)
+                .ProjectTo<Model>(_configuration)
+                .SingleOrDefaultAsync(token);
     }
 }

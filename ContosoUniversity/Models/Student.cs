@@ -8,13 +8,16 @@ namespace ContosoUniversity.Models;
 public class Student : IEntity
 {
     public int Id { get; set; }
+
     [Required]
     [StringLength(50)]
     public string LastName { get; set; }
+
     [Required]
     [StringLength(50, ErrorMessage = "First name cannot be longer than 50 characters.")]
     [Column("FirstName")]
     public string FirstMidName { get; set; }
+
     [DataType(DataType.Date)]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime EnrollmentDate { get; set; }

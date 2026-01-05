@@ -41,6 +41,7 @@ public class Details : PageModel
         public int Id { get; init; }
         public string Title { get; init; }
         public int Credits { get; init; }
+
         [Display(Name = "Department")]
         public string DepartmentName { get; init; }
     }
@@ -61,9 +62,9 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> Handle(Query message, CancellationToken token) => 
-            _db.Courses
-                .Where(i => i.Id == message.Id)
+        public Task<Model> Handle(Query message, CancellationToken token) =>
+            _db
+                .Courses.Where(i => i.Id == message.Id)
                 .ProjectTo<Model>(_configuration)
                 .SingleOrDefaultAsync(token);
     }

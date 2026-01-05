@@ -17,17 +17,13 @@ public class DetailsTests
     [Fact]
     public async Task Should_get_instructor_details()
     {
-        var englishDept = new Department
-        {
-            Name = "English",
-            StartDate = DateTime.Today
-        };
+        var englishDept = new Department { Name = "English", StartDate = DateTime.Today };
         var english101 = new Course
         {
             Department = englishDept,
             Title = "English 101",
             Credits = 4,
-            Id = _fixture.NextCourseNumber()
+            Id = _fixture.NextCourseNumber(),
         };
         await _fixture.InsertAsync(englishDept, english101);
 
@@ -37,7 +33,7 @@ public class DetailsTests
             LastName = "Costanza",
             OfficeAssignmentLocation = "Austin",
             HireDate = DateTime.Today,
-            SelectedCourses = new[] { english101.Id.ToString() }
+            SelectedCourses = new[] { english101.Id.ToString() },
         };
         var instructorId = await _fixture.SendAsync(command);
 

@@ -16,35 +16,40 @@ public class CreateTests
 
     public CreateTests(SliceFixture fixture) => _fixture = fixture;
 
-
     [Fact]
     public async Task Should_create_new_department()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         Create.Command command = null;
 
-        await _fixture.ExecuteDbContextAsync(async (db, mediator) =>
-        {
-            var admin = await db.Instructors.FindAsync(adminId);
-
-            command = new Create.Command
+        await _fixture.ExecuteDbContextAsync(
+            async (db, mediator) =>
             {
-                Budget = 10m,
-                Name = "Engineering",
-                StartDate = DateTime.Now.Date,
-                Administrator = admin
-            };
+                var admin = await db.Instructors.FindAsync(adminId);
 
-            await mediator.Send(command);
-        });
+                command = new Create.Command
+                {
+                    Budget = 10m,
+                    Name = "Engineering",
+                    StartDate = DateTime.Now.Date,
+                    Administrator = admin,
+                };
 
-        var created = await _fixture.ExecuteDbContextAsync(db => db.Departments.Where(d => d.Name == command.Name).SingleOrDefaultAsync());
+                await mediator.Send(command);
+            }
+        );
+
+        var created = await _fixture.ExecuteDbContextAsync(db =>
+            db.Departments.Where(d => d.Name == command.Name).SingleOrDefaultAsync()
+        );
 
         created.ShouldNotBeNull();
         created.Budget.ShouldBe(command.Budget.GetValueOrDefault());

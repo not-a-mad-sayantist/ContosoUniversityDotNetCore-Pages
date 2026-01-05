@@ -11,17 +11,27 @@ namespace ContosoUniversity.Pages;
 
 public static class HtmlHelperExtensions
 {
-    public static HtmlTag DisplayLabel<T, TMember>(this IHtmlHelper<T> helper, Expression<Func<T, TMember>> expression)
+    public static HtmlTag DisplayLabel<T, TMember>(
+        this IHtmlHelper<T> helper,
+        Expression<Func<T, TMember>> expression
+    )
         where T : class
     {
         return helper.Tag(expression, nameof(TagConventions.DisplayLabels));
     }
 
-    public static HtmlTag DisplayLabel<T, TMember>(this IHtmlHelper<List<T>> helper, Expression<Func<T, TMember>> expression)
+    public static HtmlTag DisplayLabel<T, TMember>(
+        this IHtmlHelper<List<T>> helper,
+        Expression<Func<T, TMember>> expression
+    )
         where T : class
     {
-        var library = helper.ViewContext.HttpContext.RequestServices.GetService<HtmlConventionLibrary>();
-        var generator = ElementGenerator<T>.For(library, t => helper.ViewContext.HttpContext.RequestServices.GetService(t));
+        var library =
+            helper.ViewContext.HttpContext.RequestServices.GetService<HtmlConventionLibrary>();
+        var generator = ElementGenerator<T>.For(
+            library,
+            t => helper.ViewContext.HttpContext.RequestServices.GetService(t)
+        );
         return generator.TagFor(expression, nameof(TagConventions.DisplayLabels));
     }
 
@@ -40,11 +50,13 @@ public static class HtmlHelperExtensions
         return outerDiv;
     }
 
-    public static HtmlTag FormBlock<T, TMember>(this IHtmlHelper<T> helper,
+    public static HtmlTag FormBlock<T, TMember>(
+        this IHtmlHelper<T> helper,
         Expression<Func<T, TMember>> expression,
         Action<HtmlTag> labelModifier = null,
         Action<HtmlTag> inputModifier = null
-    ) where T : class
+    )
+        where T : class
     {
         labelModifier ??= _ => { };
         inputModifier ??= _ => { };

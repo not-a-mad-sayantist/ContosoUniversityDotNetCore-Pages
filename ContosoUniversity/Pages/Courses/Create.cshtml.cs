@@ -45,7 +45,7 @@ public class Create : PageModel
                 Id = message.Number,
                 Credits = message.Credits,
                 Department = message.Department,
-                Title = message.Title
+                Title = message.Title,
             };
 
             await _db.Courses.AddAsync(course, token);

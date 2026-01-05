@@ -21,12 +21,9 @@ public class Index : PageModel
 
     public List<Model> Data { get; private set; }
 
-    public async Task OnGetAsync()
-        => Data = await _mediator.Send(new Query());
+    public async Task OnGetAsync() => Data = await _mediator.Send(new Query());
 
-    public record Query : IRequest<List<Model>>
-    {
-    }
+    public record Query : IRequest<List<Model>> { }
 
     public record Model
     {
@@ -51,18 +48,13 @@ public class Index : PageModel
         private readonly SchoolContext _db;
         private readonly IConfigurationProvider _configuration;
 
-        public QueryHandler(SchoolContext db, 
-            IConfigurationProvider configuration)
+        public QueryHandler(SchoolContext db, IConfigurationProvider configuration)
         {
             _db = db;
             _configuration = configuration;
         }
 
-        public Task<List<Model>> Handle(Query message, 
-            CancellationToken token) => _db
-            .Departments
-            .ProjectTo<Model>(_configuration)
-            .DecompileAsync()
-            .ToListAsync(token);
+        public Task<List<Model>> Handle(Query message, CancellationToken token) =>
+            _db.Departments.ProjectTo<Model>(_configuration).DecompileAsync().ToListAsync(token);
     }
 }

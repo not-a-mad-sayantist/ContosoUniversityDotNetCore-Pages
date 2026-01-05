@@ -16,9 +16,7 @@ public class Index(IMediator mediator) : PageModel
 
     public async Task OnGetAsync() => Data = await mediator.Send(new Query());
 
-    public record Query : IRequest<Result>
-    {
-    }
+    public record Query : IRequest<Result> { }
 
     public record Result
     {
@@ -35,23 +33,19 @@ public class Index(IMediator mediator) : PageModel
 
     public class MappingProfile : Profile
     {
-        public MappingProfile() 
-            => CreateProjection<Course, Result.Course>();
+        public MappingProfile() => CreateProjection<Course, Result.Course>();
     }
 
-    public class QueryHandler(SchoolContext db, IConfigurationProvider configuration) 
+    public class QueryHandler(SchoolContext db, IConfigurationProvider configuration)
         : IRequestHandler<Query, Result>
     {
         public async Task<Result> Handle(Query message, CancellationToken token)
         {
-            var courses = await db.Courses
-                .OrderBy(d => d.Id)
+            var courses = await db
+                .Courses.OrderBy(d => d.Id)
                 .ProjectToListAsync<Result.Course>(configuration);
 
-            return new Result
-            {
-                Courses = courses
-            };
+            return new Result { Courses = courses };
         }
     }
 }

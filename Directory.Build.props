@@ -1,5 +1,4 @@
 <Project>
-
   <PropertyGroup>
     <Authors>Jimmy Bogard</Authors>
     <LangVersion>preview</LangVersion>
@@ -7,5 +6,4 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Features>strict</Features>
   </PropertyGroup>
-
 </Project>

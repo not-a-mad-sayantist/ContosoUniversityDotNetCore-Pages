@@ -21,7 +21,7 @@ public class CreateTests
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
-            EnrollmentDate = DateTime.Today
+            EnrollmentDate = DateTime.Today,
         };
 
         var studentId = await _fixture.SendAsync(cmd);

@@ -16,13 +16,14 @@ public class EntityModelBinder : IModelBinder
             var originalValue = original.FirstValue;
             if (int.TryParse(originalValue, out var id))
             {
-                var dbContext = bindingContext.HttpContext.RequestServices.GetRequiredService<SchoolContext>();
+                var dbContext =
+                    bindingContext.HttpContext.RequestServices.GetRequiredService<SchoolContext>();
 
                 var entity = await dbContext.FindAsync(bindingContext.ModelType, id);
 
-                bindingContext.Result = entity != null ? ModelBindingResult.Success(entity) : bindingContext.Result;
+                bindingContext.Result =
+                    entity != null ? ModelBindingResult.Success(entity) : bindingContext.Result;
             }
         }
-
     }
 }

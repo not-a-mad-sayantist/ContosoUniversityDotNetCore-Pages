@@ -24,22 +24,23 @@ public class IndexTests
             {
                 FirstMidName = "George",
                 LastName = "Jones",
-                HireDate = DateTime.Today
-            });
+                HireDate = DateTime.Today,
+            }
+        );
 
         var englishDept = new Department
         {
             Name = "English",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         var historyDept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
 
         var english = new Course
@@ -47,20 +48,16 @@ public class IndexTests
             Credits = 4,
             Department = englishDept,
             Id = _fixture.NextCourseNumber(),
-            Title = "English 101"
+            Title = "English 101",
         };
         var history = new Course
         {
             Credits = 4,
             Department = historyDept,
             Id = _fixture.NextCourseNumber(),
-            Title = "History 101"
+            Title = "History 101",
         };
-        await _fixture.InsertAsync(
-            englishDept, 
-            historyDept, 
-            english, 
-            history);
+        await _fixture.InsertAsync(englishDept, historyDept, english, history);
 
         var result = await _fixture.SendAsync(new Index.Query());
 

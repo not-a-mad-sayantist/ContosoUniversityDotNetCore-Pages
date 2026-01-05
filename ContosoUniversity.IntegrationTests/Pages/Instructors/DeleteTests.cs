@@ -19,17 +19,13 @@ public class DeleteTests
     [Fact]
     public async Task Should_query_for_command()
     {
-        var englishDept = new Department
-        {
-            Name = "English",
-            StartDate = DateTime.Today
-        };
+        var englishDept = new Department { Name = "English", StartDate = DateTime.Today };
         var english101 = new Course
         {
             Department = englishDept,
             Title = "English 101",
             Credits = 4,
-            Id = _fixture.NextCourseNumber()
+            Id = _fixture.NextCourseNumber(),
         };
         var command = new CreateEdit.Command
         {
@@ -37,7 +33,7 @@ public class DeleteTests
             LastName = "Costanza",
             OfficeAssignmentLocation = "Austin",
             HireDate = DateTime.Today,
-            SelectedCourses = new []{ english101.Id.ToString()}
+            SelectedCourses = new[] { english101.Id.ToString() },
         };
         var instructorId = await _fixture.SendAsync(command);
 
@@ -53,53 +49,62 @@ public class DeleteTests
     [Fact]
     public async Task Should_delete_instructor()
     {
-        var instructorId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            OfficeAssignmentLocation = "Austin",
-            HireDate = DateTime.Today
-        });
+        var instructorId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                OfficeAssignmentLocation = "Austin",
+                HireDate = DateTime.Today,
+            }
+        );
         var englishDept = new Department
         {
             Name = "English",
             StartDate = DateTime.Today,
-            InstructorId = instructorId
+            InstructorId = instructorId,
         };
         var english101 = new Course
         {
             Department = englishDept,
             Title = "English 101",
             Credits = 4,
-            Id = _fixture.NextCourseNumber()
+            Id = _fixture.NextCourseNumber(),
         };
 
         await _fixture.InsertAsync(englishDept, english101);
 
-        await _fixture.SendAsync(new CreateEdit.Command
-        {
-            Id = instructorId,
-            FirstMidName = "George",
-            LastName = "Costanza",
-            OfficeAssignmentLocation = "Austin",
-            HireDate = DateTime.Today,
-            SelectedCourses = new[] { english101.Id.ToString() }
-        });
+        await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                Id = instructorId,
+                FirstMidName = "George",
+                LastName = "Costanza",
+                OfficeAssignmentLocation = "Austin",
+                HireDate = DateTime.Today,
+                SelectedCourses = new[] { english101.Id.ToString() },
+            }
+        );
 
         await _fixture.SendAsync(new Delete.Command { Id = instructorId });
 
-        var instructorCount = await _fixture.ExecuteDbContextAsync(db => db.Instructors.Where(i => i.Id == instructorId).CountAsync());
+        var instructorCount = await _fixture.ExecuteDbContextAsync(db =>
+            db.Instructors.Where(i => i.Id == instructorId).CountAsync()
+        );
 
         instructorCount.ShouldBe(0);
 
         var englishDeptId = englishDept.Id;
-        englishDept = await _fixture.ExecuteDbContextAsync(db => db.Departments.FindAsync(englishDeptId));
+        englishDept = await _fixture.ExecuteDbContextAsync(db =>
+            db.Departments.FindAsync(englishDeptId)
+        );
 
         englishDept.InstructorId.ShouldBeNull();
 
-        var courseInstructorCount = await _fixture.ExecuteDbContextAsync(db => db.CourseAssignments.Where(ci => ci.InstructorId == instructorId).CountAsync());
+        var courseInstructorCount = await _fixture.ExecuteDbContextAsync(db =>
+            db.CourseAssignments.Where(ci => ci.InstructorId == instructorId).CountAsync()
+        );
 
         courseInstructorCount.ShouldBe(0);
     }
-
 }

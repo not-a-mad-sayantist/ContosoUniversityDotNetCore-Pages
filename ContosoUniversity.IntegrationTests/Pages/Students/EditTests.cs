@@ -21,15 +21,12 @@ public class EditTests
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
-            EnrollmentDate = DateTime.Today
+            EnrollmentDate = DateTime.Today,
         };
 
         var studentId = await _fixture.SendAsync(cmd);
 
-        var query = new Edit.Query
-        {
-            Id = studentId
-        };
+        var query = new Edit.Query { Id = studentId };
 
         var result = await _fixture.SendAsync(query);
 
@@ -45,7 +42,7 @@ public class EditTests
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
-            EnrollmentDate = DateTime.Today
+            EnrollmentDate = DateTime.Today,
         };
 
         var studentId = await _fixture.SendAsync(createCommand);
@@ -55,7 +52,7 @@ public class EditTests
             Id = studentId,
             FirstMidName = "Mary",
             LastName = "Smith",
-            EnrollmentDate = DateTime.Today.AddYears(-1)
+            EnrollmentDate = DateTime.Today.AddYears(-1),
         };
 
         await _fixture.SendAsync(editCommand);

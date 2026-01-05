@@ -19,19 +19,21 @@ public class DetailsTests
     [Fact]
     public async Task Should_get_details()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var englishDept = new Department
         {
             InstructorId = adminId,
             Budget = 123m,
             Name = "English 101",
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         await _fixture.InsertAsync(englishDept);
         var deptId = englishDept.Id;
@@ -41,14 +43,14 @@ public class DetailsTests
             DepartmentId = deptId,
             Credits = 10,
             Id = _fixture.NextCourseNumber(),
-            Title = "Course 1"
+            Title = "Course 1",
         };
         var course2 = new Course
         {
             DepartmentId = deptId,
             Credits = 10,
             Id = _fixture.NextCourseNumber(),
-            Title = "Course 2"
+            Title = "Course 2",
         };
         await _fixture.InsertAsync(course1, course2);
 
@@ -56,7 +58,7 @@ public class DetailsTests
         {
             FirstMidName = "Joe",
             LastName = "Schmoe",
-            EnrollmentDate = new DateTime(2013, 1, 1)
+            EnrollmentDate = new DateTime(2013, 1, 1),
         };
         var studentId = await _fixture.SendAsync(command);
 
@@ -64,17 +66,17 @@ public class DetailsTests
         {
             CourseId = course1.Id,
             Grade = Grade.A,
-            StudentId = studentId
+            StudentId = studentId,
         };
         var enrollment2 = new Enrollment
         {
             CourseId = course2.Id,
             Grade = Grade.F,
-            StudentId = studentId
+            StudentId = studentId,
         };
         await _fixture.InsertAsync(enrollment1, enrollment2);
 
-        var details = await _fixture.SendAsync(new Details.Query {Id = studentId});
+        var details = await _fixture.SendAsync(new Details.Query { Id = studentId });
 
         details.ShouldNotBeNull();
         details.FirstMidName.ShouldBe(command.FirstMidName);

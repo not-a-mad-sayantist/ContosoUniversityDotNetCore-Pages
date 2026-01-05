@@ -19,26 +19,28 @@ public class IndexTests
     [Fact]
     public async Task Should_list_departments()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         var dept2 = new Department
         {
             Name = "English",
             InstructorId = adminId,
             Budget = 456m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
 
         await _fixture.InsertAsync(dept, dept2);
@@ -52,5 +54,4 @@ public class IndexTests
         result.Select(m => m.Id).ShouldContain(dept.Id);
         result.Select(m => m.Id).ShouldContain(dept2.Id);
     }
-
 }

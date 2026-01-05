@@ -24,17 +24,17 @@ public class IndexTests
         {
             EnrollmentDate = DateTime.Today,
             FirstMidName = "Joe",
-            LastName = lastName
+            LastName = lastName,
         };
         var student2 = new Student
         {
             EnrollmentDate = DateTime.Today,
             FirstMidName = "Jane",
-            LastName = lastName
+            LastName = lastName,
         };
         await _fixture.InsertAsync(student1, student2);
 
-        var query = new Index.Query{CurrentFilter = lastName };
+        var query = new Index.Query { CurrentFilter = lastName };
 
         var result = await _fixture.SendAsync(query);
 
@@ -52,17 +52,17 @@ public class IndexTests
         {
             EnrollmentDate = DateTime.Today,
             FirstMidName = "Joe",
-            LastName = lastName + "zzz"
+            LastName = lastName + "zzz",
         };
         var student2 = new Student
         {
             EnrollmentDate = DateTime.Today,
             FirstMidName = "Jane",
-            LastName = lastName + "aaa"
+            LastName = lastName + "aaa",
         };
         await _fixture.InsertAsync(student1, student2);
 
-        var query = new Index.Query{CurrentFilter = lastName, SortOrder = "name_desc" };
+        var query = new Index.Query { CurrentFilter = lastName, SortOrder = "name_desc" };
 
         var result = await _fixture.SendAsync(query);
 

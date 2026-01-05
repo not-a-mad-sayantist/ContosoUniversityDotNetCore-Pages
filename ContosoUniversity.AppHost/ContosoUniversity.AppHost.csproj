@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <Sdk Name="Aspire.AppHost.Sdk" Version="13.0.1"/>
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.0.1" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -18,5 +17,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ContosoUniversity\ContosoUniversity.csproj" />
   </ItemGroup>
-
 </Project>

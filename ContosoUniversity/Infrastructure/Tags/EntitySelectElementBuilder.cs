@@ -6,9 +6,11 @@ using HtmlTags.Conventions.Elements;
 
 namespace ContosoUniversity.Infrastructure.Tags;
 
-public abstract class EntitySelectElementBuilder<T> : ElementTagBuilder where T : class
+public abstract class EntitySelectElementBuilder<T> : ElementTagBuilder
+    where T : class
 {
-    public override bool Matches(ElementRequest subject) => typeof(T).IsAssignableFrom(subject.Accessor.PropertyType);
+    public override bool Matches(ElementRequest subject) =>
+        typeof(T).IsAssignableFrom(subject.Accessor.PropertyType);
 
     public override HtmlTag Build(ElementRequest request)
     {
@@ -33,12 +35,12 @@ public abstract class EntitySelectElementBuilder<T> : ElementTagBuilder where T 
         return selectTag;
     }
 
-    protected virtual HtmlTag BuildOptionTag(SelectTag select, T model, ElementRequest request) 
-        => @select.Option(GetDisplayValue(model), GetValue(model));
+    protected virtual HtmlTag BuildOptionTag(SelectTag select, T model, ElementRequest request) =>
+        @select.Option(GetDisplayValue(model), GetValue(model));
 
     protected abstract int GetValue(T instance);
     protected abstract string GetDisplayValue(T instance);
 
-    protected virtual IEnumerable<T> Source(ElementRequest request) 
-        => request.Get<SchoolContext>().Set<T>();
+    protected virtual IEnumerable<T> Source(ElementRequest request) =>
+        request.Get<SchoolContext>().Set<T>();
 }

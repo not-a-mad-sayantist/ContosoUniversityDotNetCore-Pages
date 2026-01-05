@@ -30,18 +30,21 @@ public class SliceFixture : IAsyncLifetime
     private IServiceScopeFactory _scopeFactory;
     private WebApplicationFactory<Program> _factory;
 
-    class ContosoTestApplicationFactory 
-        : WebApplicationFactory<Program>
+    class ContosoTestApplicationFactory : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration((_, configBuilder) =>
-            {
-                configBuilder.AddInMemoryCollection(new Dictionary<string, string>
+            builder.ConfigureAppConfiguration(
+                (_, configBuilder) =>
                 {
-                    {"ConnectionStrings:db", ConnectionString}
-                });
-            });
+                    configBuilder.AddInMemoryCollection(
+                        new Dictionary<string, string>
+                        {
+                            { "ConnectionStrings:db", ConnectionString },
+                        }
+                    );
+                }
+            );
         }
 
         public required string ConnectionString { get; init; }
@@ -62,7 +65,7 @@ public class SliceFixture : IAsyncLifetime
         }
         catch (Exception)
         {
-            dbContext.RollbackTransaction(); 
+            dbContext.RollbackTransaction();
             throw;
         }
     }
@@ -89,25 +92,26 @@ public class SliceFixture : IAsyncLifetime
         }
     }
 
-    public Task ExecuteDbContextAsync(Func<SchoolContext, Task> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()));
+    public Task ExecuteDbContextAsync(Func<SchoolContext, Task> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()));
 
-    public Task ExecuteDbContextAsync(Func<SchoolContext, ValueTask> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()).AsTask());
+    public Task ExecuteDbContextAsync(Func<SchoolContext, ValueTask> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()).AsTask());
 
-    public Task ExecuteDbContextAsync(Func<SchoolContext, IMediator, Task> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<IMediator>()));
+    public Task ExecuteDbContextAsync(Func<SchoolContext, IMediator, Task> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<IMediator>()));
 
-    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, Task<T>> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()));
+    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()));
 
-    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, ValueTask<T>> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()).AsTask());
+    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, ValueTask<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>()).AsTask());
 
-    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, IMediator, Task<T>> action) 
-        => ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<IMediator>()));
+    public Task<T> ExecuteDbContextAsync<T>(Func<SchoolContext, IMediator, Task<T>> action) =>
+        ExecuteScopeAsync(sp => action(sp.GetService<SchoolContext>(), sp.GetService<IMediator>()));
 
-    public Task InsertAsync<T>(params T[] entities) where T : class
+    public Task InsertAsync<T>(params T[] entities)
+        where T : class
     {
         return ExecuteDbContextAsync(db =>
         {
@@ -119,7 +123,8 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
-    public Task InsertAsync<TEntity>(TEntity entity) where TEntity : class
+    public Task InsertAsync<TEntity>(TEntity entity)
+        where TEntity : class
     {
         return ExecuteDbContextAsync(db =>
         {
@@ -129,7 +134,7 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
-    public Task InsertAsync<TEntity, TEntity2>(TEntity entity, TEntity2 entity2) 
+    public Task InsertAsync<TEntity, TEntity2>(TEntity entity, TEntity2 entity2)
         where TEntity : class
         where TEntity2 : class
     {
@@ -142,7 +147,11 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
-    public Task InsertAsync<TEntity, TEntity2, TEntity3>(TEntity entity, TEntity2 entity2, TEntity3 entity3) 
+    public Task InsertAsync<TEntity, TEntity2, TEntity3>(
+        TEntity entity,
+        TEntity2 entity2,
+        TEntity3 entity3
+    )
         where TEntity : class
         where TEntity2 : class
         where TEntity3 : class
@@ -157,7 +166,12 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
-    public Task InsertAsync<TEntity, TEntity2, TEntity3, TEntity4>(TEntity entity, TEntity2 entity2, TEntity3 entity3, TEntity4 entity4) 
+    public Task InsertAsync<TEntity, TEntity2, TEntity3, TEntity4>(
+        TEntity entity,
+        TEntity2 entity2,
+        TEntity3 entity3,
+        TEntity4 entity4
+    )
         where TEntity : class
         where TEntity2 : class
         where TEntity3 : class
@@ -209,10 +223,8 @@ public class SliceFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         // Create a Docker network for container-to-container communication
-        _network = new NetworkBuilder()
-            .WithName($"test-net-{Guid.NewGuid():N}")
-            .Build();
-        
+        _network = new NetworkBuilder().WithName($"test-net-{Guid.NewGuid():N}").Build();
+
         await _network.CreateAsync();
 
         // Start SQL Server on the network with a known alias
@@ -221,22 +233,28 @@ public class SliceFixture : IAsyncLifetime
             .WithNetwork(_network)
             .WithNetworkAliases("mssql")
             .Build();
-        
+
         await _msSqlContainer.StartAsync();
-        
+
         var connectionString = _msSqlContainer.GetConnectionString();
 
         // Run Grate migrations using the erikbra/grate Docker image
         // The Grate container connects to SQL via the network alias "mssql"
         var builder = new SqlConnectionStringBuilder(connectionString)
         {
-            DataSource = "mssql,1433"
+            DataSource = "mssql,1433",
         };
         //var saPassword = "Your_password123"; // Default password from MsSqlBuilder
         var inContainerConn = builder.ToString();
 
         // Find and mount the migration scripts directory
-        var hostScriptsPath = Path.GetFullPath(Path.Combine(FindRepoRoot(Directory.GetCurrentDirectory()), "ContosoUniversity", "App_Data"));
+        var hostScriptsPath = Path.GetFullPath(
+            Path.Combine(
+                FindRepoRoot(Directory.GetCurrentDirectory()),
+                "ContosoUniversity",
+                "App_Data"
+            )
+        );
         var mountPath = ToDockerPath(hostScriptsPath);
 
         var grateContainer = new ContainerBuilder()
@@ -246,21 +264,28 @@ public class SliceFixture : IAsyncLifetime
             .WithBindMount(mountPath, "/db")
             .WithEnvironment("APP_CONNSTRING", inContainerConn)
             .WithEnvironment("DATABASE_TYPE", "sqlserver")
-            .WithWaitStrategy(Wait
-                .ForUnixContainer()
-                .UntilMessageIsLogged("has grated your database", 
-                    strategy => strategy.WithMode(WaitStrategyMode.OneShot)
-                        .WithTimeout(TimeSpan.FromMinutes(2))))
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    .UntilMessageIsLogged(
+                        "has grated your database",
+                        strategy =>
+                            strategy
+                                .WithMode(WaitStrategyMode.OneShot)
+                                .WithTimeout(TimeSpan.FromMinutes(2))
+                    )
+            )
             .Build();
 
         try
         {
             await grateContainer.StartAsync();
-            
+
             var (stdout, stderr) = await grateContainer.GetLogsAsync();
-            
-            if (stderr.Contains("error", StringComparison.OrdinalIgnoreCase) || 
-                stderr.Contains("failed", StringComparison.OrdinalIgnoreCase))
+
+            if (
+                stderr.Contains("error", StringComparison.OrdinalIgnoreCase)
+                || stderr.Contains("failed", StringComparison.OrdinalIgnoreCase)
+            )
             {
                 throw new Exception("Grate migrations failed. Logs:\n" + stderr);
             }
@@ -271,10 +296,7 @@ public class SliceFixture : IAsyncLifetime
             await grateContainer.DisposeAsync();
         }
 
-        _factory = new ContosoTestApplicationFactory
-        {
-            ConnectionString = connectionString
-        };
+        _factory = new ContosoTestApplicationFactory { ConnectionString = connectionString };
 
         _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
 
@@ -315,9 +337,9 @@ public class SliceFixture : IAsyncLifetime
     {
         await _msSqlContainer.StopAsync();
         await _msSqlContainer.DisposeAsync();
-        
+
         await _factory.DisposeAsync();
-        
+
         await _network.DeleteAsync();
         await _network.DisposeAsync();
     }

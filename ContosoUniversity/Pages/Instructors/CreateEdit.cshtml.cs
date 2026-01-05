@@ -68,6 +68,7 @@ public class CreateEdit : PageModel
         public int? Id { get; init; }
 
         public string LastName { get; init; }
+
         [Display(Name = "First Name")]
         public string FirstMidName { get; init; }
 
@@ -116,7 +117,7 @@ public class CreateEdit : PageModel
         }
     }
 
-    public class QueryHandler(SchoolContext db, IConfigurationProvider configuration) 
+    public class QueryHandler(SchoolContext db, IConfigurationProvider configuration)
         : IRequestHandler<Query, Command>
     {
         public async Task<Command> Handle(Query message, CancellationToken token)
@@ -128,19 +129,23 @@ public class CreateEdit : PageModel
             }
             else
             {
-                model = await db.Instructors
-                    .Where(i => i.Id == message.Id)
+                model = await db
+                    .Instructors.Where(i => i.Id == message.Id)
                     .ProjectTo<Command>(configuration)
                     .SingleOrDefaultAsync(token);
             }
 
-            var instructorCourses = new HashSet<int>(model.CourseAssignments.Select(c => c.CourseId));
-            var viewModel = db.Courses.Select(course => new Command.AssignedCourseData
-            {
-                CourseId = course.Id,
-                Title = course.Title,
-                Assigned = instructorCourses.Any() && instructorCourses.Contains(course.Id)
-            }).ToList();
+            var instructorCourses = new HashSet<int>(
+                model.CourseAssignments.Select(c => c.CourseId)
+            );
+            var viewModel = db
+                .Courses.Select(course => new Command.AssignedCourseData
+                {
+                    CourseId = course.Id,
+                    Title = course.Title,
+                    Assigned = instructorCourses.Any() && instructorCourses.Contains(course.Id),
+                })
+                .ToList();
 
             model = model with { AssignedCourses = viewModel };
 
@@ -160,8 +165,8 @@ public class CreateEdit : PageModel
             }
             else
             {
-                instructor = await db.Instructors
-                    .Include(i => i.OfficeAssignment)
+                instructor = await db
+                    .Instructors.Include(i => i.OfficeAssignment)
                     .Include(i => i.CourseAssignments)
                     .Where(i => i.Id == message.Id)
                     .SingleAsync(token);

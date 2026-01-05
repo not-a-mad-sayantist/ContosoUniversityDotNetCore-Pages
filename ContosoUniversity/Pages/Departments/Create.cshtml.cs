@@ -68,7 +68,7 @@ public class Create : PageModel
                 Administrator = message.Administrator,
                 Budget = message.Budget!.Value,
                 Name = message.Name,
-                StartDate = message.StartDate!.Value
+                StartDate = message.StartDate!.Value,
             };
 
             await _db.Departments.AddAsync(department, token);

@@ -10,9 +10,8 @@ public class SchoolContext : DbContext
 {
     private IDbContextTransaction _currentTransaction;
 
-    public SchoolContext(DbContextOptions<SchoolContext> options) : base(options)
-    {
-    }
+    public SchoolContext(DbContextOptions<SchoolContext> options)
+        : base(options) { }
 
     public DbSet<Course> Courses { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
@@ -32,7 +31,8 @@ public class SchoolContext : DbContext
         modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment");
         modelBuilder.Entity<CourseAssignment>().ToTable("CourseAssignment");
 
-        modelBuilder.Entity<CourseAssignment>()
+        modelBuilder
+            .Entity<CourseAssignment>()
             .HasKey(c => new { CourseID = c.CourseId, InstructorID = c.InstructorId });
     }
 

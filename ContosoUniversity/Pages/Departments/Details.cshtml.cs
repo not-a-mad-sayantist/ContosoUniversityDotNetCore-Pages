@@ -22,8 +22,7 @@ public class Details : PageModel
 
     public Details(IMediator mediator) => _mediator = mediator;
 
-    public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+    public async Task OnGetAsync(Query query) => Data = await _mediator.Send(query);
 
     public record Query : IRequest<Model>
     {
@@ -48,7 +47,7 @@ public class Details : PageModel
     {
         public MappingProfile() => CreateProjection<Department, Model>();
     }
-        
+
     public class QueryHandler : IRequestHandler<Query, Model>
     {
         private readonly SchoolContext _db;
@@ -60,10 +59,9 @@ public class Details : PageModel
             _configuration = configuration;
         }
 
-        public Task<Model> Handle(Query message, 
-            CancellationToken token) => 
-            _db.Departments
-                .Where(m => m.Id == message.Id)
+        public Task<Model> Handle(Query message, CancellationToken token) =>
+            _db
+                .Departments.Where(m => m.Id == message.Id)
                 .ProjectTo<Model>(_configuration)
                 .DecompileAsync()
                 .SingleOrDefaultAsync(token);

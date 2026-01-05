@@ -22,12 +22,11 @@ public class AboutPage : PageModel
     public async Task OnGetAsync()
     {
         var groups = await _db
-            .Students
-            .GroupBy(x => x.EnrollmentDate)
+            .Students.GroupBy(x => x.EnrollmentDate)
             .Select(x => new EnrollmentDateGroup
             {
                 EnrollmentDate = x.Key,
-                StudentCount = x.Count()
+                StudentCount = x.Count(),
             })
             .ToListAsync();
 

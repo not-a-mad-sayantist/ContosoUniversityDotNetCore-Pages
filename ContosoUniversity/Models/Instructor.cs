@@ -27,11 +27,11 @@ public class Instructor : IEntity
     [Computed]
     public string FullName => LastName + ", " + FirstMidName;
 
-    public ICollection<CourseAssignment> CourseAssignments { get; private set; } = new List<CourseAssignment>();
+    public ICollection<CourseAssignment> CourseAssignments { get; private set; } =
+        new List<CourseAssignment>();
     public OfficeAssignment OfficeAssignment { get; private set; }
 
-    public void UpdateDetails(CreateEdit.Command message,
-        IEnumerable<Course> courses)
+    public void UpdateDetails(CreateEdit.Command message, IEnumerable<Course> courses)
     {
         UpdateDetails(message);
 
@@ -52,10 +52,7 @@ public class Instructor : IEntity
         }
         else if (OfficeAssignment == null)
         {
-            OfficeAssignment = new OfficeAssignment
-            {
-                Location = message.OfficeAssignmentLocation
-            };
+            OfficeAssignment = new OfficeAssignment { Location = message.OfficeAssignmentLocation };
         }
         else
         {
@@ -72,8 +69,7 @@ public class Instructor : IEntity
         }
 
         var selectedCoursesHs = new HashSet<string>(selectedCourses);
-        var instructorCourses = new HashSet<int>
-            (CourseAssignments.Select(c => c.CourseId));
+        var instructorCourses = new HashSet<int>(CourseAssignments.Select(c => c.CourseId));
 
         foreach (var course in courses)
         {
@@ -81,7 +77,9 @@ public class Instructor : IEntity
             {
                 if (!instructorCourses.Contains(course.Id))
                 {
-                    CourseAssignments.Add(new CourseAssignment { Course = course, Instructor = this });
+                    CourseAssignments.Add(
+                        new CourseAssignment { Course = course, Instructor = this }
+                    );
                 }
             }
             else

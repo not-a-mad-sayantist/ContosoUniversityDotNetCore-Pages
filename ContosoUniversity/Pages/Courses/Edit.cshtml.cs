@@ -57,8 +57,8 @@ public class Edit : PageModel
         }
 
         public Task<Command> Handle(Query message, CancellationToken token) =>
-            _db.Courses
-                .Where(c => c.Id == message.Id)
+            _db
+                .Courses.Where(c => c.Id == message.Id)
                 .ProjectTo<Command>(_configuration)
                 .SingleOrDefaultAsync(token);
     }

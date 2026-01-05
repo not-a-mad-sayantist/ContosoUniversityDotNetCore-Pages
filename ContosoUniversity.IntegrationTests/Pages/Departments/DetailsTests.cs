@@ -18,26 +18,25 @@ public class DetailsTests
     [Fact]
     public async Task Should_get_department_details()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         await _fixture.InsertAsync(dept);
 
-        var query = new Details.Query
-        {
-            Id = dept.Id
-        };
+        var query = new Details.Query { Id = dept.Id };
 
         var result = await _fixture.SendAsync(query);
         var admin = await _fixture.FindAsync<Instructor>(adminId);
@@ -46,5 +45,4 @@ public class DetailsTests
         result.Name.ShouldBe(dept.Name);
         result.AdministratorFullName.ShouldBe(admin.FullName);
     }
-
 }

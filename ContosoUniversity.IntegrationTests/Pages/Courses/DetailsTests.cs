@@ -18,19 +18,21 @@ public class DetailsTests
     [Fact]
     public async Task Should_query_for_details()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
 
         var course = new Course
@@ -38,7 +40,7 @@ public class DetailsTests
             Credits = 4,
             Department = dept,
             Id = _fixture.NextCourseNumber(),
-            Title = "English 101"
+            Title = "English 101",
         };
 
         await _fixture.InsertAsync(dept, course);

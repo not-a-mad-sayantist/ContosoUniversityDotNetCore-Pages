@@ -40,6 +40,7 @@ public class Delete : PageModel
     public record Command : IRequest
     {
         public int Id { get; init; }
+
         [Display(Name = "First Name")]
         public string FirstMidName { get; init; }
         public string LastName { get; init; }
@@ -62,11 +63,11 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> Handle(Query message, CancellationToken token) => await _db
-            .Students
-            .Where(s => s.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
-            .SingleOrDefaultAsync(token);
+        public async Task<Command> Handle(Query message, CancellationToken token) =>
+            await _db
+                .Students.Where(s => s.Id == message.Id)
+                .ProjectTo<Command>(_configuration)
+                .SingleOrDefaultAsync(token);
     }
 
     public class CommandHandler : IRequestHandler<Command>
@@ -80,5 +81,4 @@ public class Delete : PageModel
             _db.Students.Remove(await _db.Students.FindAsync(message.Id));
         }
     }
-
 }

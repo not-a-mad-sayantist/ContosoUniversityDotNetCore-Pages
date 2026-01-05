@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ContosoUniversity.Pages.Instructors;
+
 //public class TransactionBehavior<TRequest, TResponse>
 //    : IPipelineBehavior<TRequest, TResponse>
 //{
@@ -21,7 +22,7 @@ namespace ContosoUniversity.Pages.Instructors;
 
 //    public TransactionBehavior(SchoolContext dbContext) => _dbContext = dbContext;
 
-//    public async Task<TResponse> Handle(TRequest request, 
+//    public async Task<TResponse> Handle(TRequest request,
 //        CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
 //    {
 //        try
@@ -44,11 +45,11 @@ namespace ContosoUniversity.Pages.Instructors;
 //{
 //    private readonly ILogger<TRequest> _logger;
 
-//    public LoggingBehavior(ILogger<TRequest> logger) 
+//    public LoggingBehavior(ILogger<TRequest> logger)
 //        => _logger = logger;
 
 //    public async Task<TResponse> Handle(
-//        TRequest request, CancellationToken cancellationToken, 
+//        TRequest request, CancellationToken cancellationToken,
 //        RequestHandlerDelegate<TResponse> next)
 //    {
 //        using (_logger.BeginScope(request))
@@ -65,13 +66,11 @@ public class Index : PageModel
 {
     private readonly IMediator _mediator;
 
-    public Index(IMediator mediator) 
-        => _mediator = mediator;
+    public Index(IMediator mediator) => _mediator = mediator;
 
     public Model Data { get; private set; }
 
-    public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+    public async Task OnGetAsync(Query query) => Data = await _mediator.Send(query);
 
     public record Query : IRequest<Model>
     {
@@ -152,13 +151,12 @@ public class Index : PageModel
 
         public async Task<Model> Handle(Query message, CancellationToken token)
         {
-            var instructors = await _db.Instructors
-                    .Include(i => i.CourseAssignments)
+            var instructors = await _db
+                .Instructors.Include(i => i.CourseAssignments)
                     .ThenInclude(c => c.Course)
-                    .OrderBy(i => i.LastName)
-                    .ProjectTo<Model.Instructor>(_configuration)
-                    .ToListAsync(token)
-                ;
+                .OrderBy(i => i.LastName)
+                .ProjectTo<Model.Instructor>(_configuration)
+                .ToListAsync(token);
 
             // EF Core cannot project child collections w/o Include
             // See https://github.com/aspnet/EntityFrameworkCore/issues/9128
@@ -171,8 +169,8 @@ public class Index : PageModel
 
             if (message.Id != null)
             {
-                courses = await _db.CourseAssignments
-                    .Where(ci => ci.InstructorId == message.Id)
+                courses = await _db
+                    .CourseAssignments.Where(ci => ci.InstructorId == message.Id)
                     .Select(ci => ci.Course)
                     .ProjectTo<Model.Course>(_configuration)
                     .ToListAsync(token);
@@ -180,8 +178,8 @@ public class Index : PageModel
 
             if (message.CourseId != null)
             {
-                enrollments = await _db.Enrollments
-                    .Where(x => x.CourseId == message.CourseId)
+                enrollments = await _db
+                    .Enrollments.Where(x => x.CourseId == message.CourseId)
                     .ProjectTo<Model.Enrollment>(_configuration)
                     .ToListAsync(token);
             }
@@ -192,7 +190,7 @@ public class Index : PageModel
                 Courses = courses,
                 Enrollments = enrollments,
                 InstructorId = message.Id,
-                CourseId = message.CourseId
+                CourseId = message.CourseId,
             };
 
             return viewModel;

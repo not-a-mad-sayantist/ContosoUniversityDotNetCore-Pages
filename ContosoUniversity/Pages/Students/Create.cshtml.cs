@@ -61,7 +61,7 @@ public class Create : PageModel
             {
                 FirstMidName = message.FirstMidName,
                 LastName = message.LastName,
-                EnrollmentDate = message.EnrollmentDate!.Value
+                EnrollmentDate = message.EnrollmentDate!.Value,
             };
 
             await _db.Students.AddAsync(student, token);

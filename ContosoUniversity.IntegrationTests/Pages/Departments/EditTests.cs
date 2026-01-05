@@ -20,26 +20,25 @@ public class EditTests
     [Fact]
     public async Task Should_get_edit_department_details()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         await _fixture.InsertAsync(dept);
 
-        var query = new Edit.Query
-        {
-            Id = dept.Id
-        };
+        var query = new Edit.Query { Id = dept.Id };
 
         var result = await _fixture.SendAsync(query);
 
@@ -51,47 +50,57 @@ public class EditTests
     [Fact]
     public async Task Should_edit_department()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
-        var admin2Id = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var admin2Id = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         await _fixture.InsertAsync(dept);
 
         Edit.Command command = null;
-        await _fixture.ExecuteDbContextAsync(async (ctxt, mediator) =>
-        {
-            var admin2 = await _fixture.FindAsync<Instructor>(admin2Id);
-
-            command = new Edit.Command
+        await _fixture.ExecuteDbContextAsync(
+            async (ctxt, mediator) =>
             {
-                Id = dept.Id,
-                Name = "English",
-                Administrator = admin2,
-                StartDate = DateTime.Today.AddDays(-1),
-                Budget = 456m
-            };
+                var admin2 = await _fixture.FindAsync<Instructor>(admin2Id);
 
-            await mediator.Send(command);
-        });
+                command = new Edit.Command
+                {
+                    Id = dept.Id,
+                    Name = "English",
+                    Administrator = admin2,
+                    StartDate = DateTime.Today.AddDays(-1),
+                    Budget = 456m,
+                };
 
-        var result = await _fixture.ExecuteDbContextAsync(db => db.Departments.Where(d => d.Id == dept.Id).Include(d => d.Administrator).SingleOrDefaultAsync());
+                await mediator.Send(command);
+            }
+        );
+
+        var result = await _fixture.ExecuteDbContextAsync(db =>
+            db.Departments.Where(d => d.Id == dept.Id)
+                .Include(d => d.Administrator)
+                .SingleOrDefaultAsync()
+        );
 
         result.Name.ShouldBe(command.Name);
         result.Administrator.Id.ShouldBe(command.Administrator.Id);

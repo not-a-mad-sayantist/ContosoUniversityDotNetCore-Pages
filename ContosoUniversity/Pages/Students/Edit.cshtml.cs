@@ -24,8 +24,7 @@ public class Edit : PageModel
     [BindProperty]
     public Command Data { get; set; }
 
-    public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+    public async Task OnGetAsync(Query query) => Data = await _mediator.Send(query);
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -84,10 +83,11 @@ public class Edit : PageModel
             _configuration = configuration;
         }
 
-        public async Task<Command> Handle(Query message, CancellationToken token) => await _db.Students
-            .Where(s => s.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
-            .SingleOrDefaultAsync(token);
+        public async Task<Command> Handle(Query message, CancellationToken token) =>
+            await _db
+                .Students.Where(s => s.Id == message.Id)
+                .ProjectTo<Command>(_configuration)
+                .SingleOrDefaultAsync(token);
     }
 
     public class CommandHandler : IRequestHandler<Command>

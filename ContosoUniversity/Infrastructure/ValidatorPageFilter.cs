@@ -6,9 +6,7 @@ namespace ContosoUniversity.Infrastructure;
 
 public class ValidatorPageFilter : IPageFilter
 {
-    public void OnPageHandlerSelected(PageHandlerSelectedContext context)
-    {
-    }
+    public void OnPageHandlerSelected(PageHandlerSelectedContext context) { }
 
     public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
     {
@@ -22,11 +20,13 @@ public class ValidatorPageFilter : IPageFilter
             else
             {
                 var result = new ContentResult();
-                var content = JsonConvert.SerializeObject(context.ModelState,
+                var content = JsonConvert.SerializeObject(
+                    context.ModelState,
                     new JsonSerializerSettings
                     {
-                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                    });
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    }
+                );
                 result.Content = content;
                 result.ContentType = "application/json";
 
@@ -36,7 +36,5 @@ public class ValidatorPageFilter : IPageFilter
         }
     }
 
-    public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
-    {
-    }
+    public void OnPageHandlerExecuted(PageHandlerExecutedContext context) { }
 }

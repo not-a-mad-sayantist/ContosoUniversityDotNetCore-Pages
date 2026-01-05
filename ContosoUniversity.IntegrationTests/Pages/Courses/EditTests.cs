@@ -18,19 +18,21 @@ public class EditTests
     [Fact]
     public async Task Should_query_for_command()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
 
         var course = new Course
@@ -38,7 +40,7 @@ public class EditTests
             Credits = 4,
             Department = dept,
             Id = _fixture.NextCourseNumber(),
-            Title = "English 101"
+            Title = "English 101",
         };
         await _fixture.InsertAsync(dept, course);
 
@@ -53,26 +55,28 @@ public class EditTests
     [Fact]
     public async Task Should_edit()
     {
-        var adminId = await _fixture.SendAsync(new CreateEdit.Command
-        {
-            FirstMidName = "George",
-            LastName = "Costanza",
-            HireDate = DateTime.Today
-        });
+        var adminId = await _fixture.SendAsync(
+            new CreateEdit.Command
+            {
+                FirstMidName = "George",
+                LastName = "Costanza",
+                HireDate = DateTime.Today,
+            }
+        );
 
         var dept = new Department
         {
             Name = "History",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
         var newDept = new Department
         {
             Name = "English",
             InstructorId = adminId,
             Budget = 123m,
-            StartDate = DateTime.Today
+            StartDate = DateTime.Today,
         };
 
         var course = new Course
@@ -80,24 +84,26 @@ public class EditTests
             Credits = 4,
             Department = dept,
             Id = _fixture.NextCourseNumber(),
-            Title = "English 101"
+            Title = "English 101",
         };
         await _fixture.InsertAsync(dept, newDept, course);
 
         Edit.Command command = default;
 
-        await _fixture.ExecuteDbContextAsync(async (ctxt, mediator) =>
-        {
-            command = new Edit.Command
+        await _fixture.ExecuteDbContextAsync(
+            async (ctxt, mediator) =>
             {
-                Id = course.Id,
-                Credits = 5,
-                Title = "English 202",
-                Department = await ctxt.Departments.FindAsync(newDept.Id)
-            };
+                command = new Edit.Command
+                {
+                    Id = course.Id,
+                    Credits = 5,
+                    Title = "English 202",
+                    Department = await ctxt.Departments.FindAsync(newDept.Id),
+                };
 
-            await mediator.Send(command);
-        });
+                await mediator.Send(command);
+            }
+        );
 
         var edited = await _fixture.FindAsync<Course>(course.Id);
 

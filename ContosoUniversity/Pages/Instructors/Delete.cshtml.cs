@@ -24,8 +24,7 @@ public class Delete : PageModel
     [BindProperty]
     public Command Data { get; set; }
 
-    public async Task OnGetAsync(Query query)
-        => Data = await _mediator.Send(query);
+    public async Task OnGetAsync(Query query) => Data = await _mediator.Send(query);
 
     public async Task<ActionResult> OnPostAsync()
     {
@@ -52,6 +51,7 @@ public class Delete : PageModel
         public int? Id { get; init; }
 
         public string LastName { get; init; }
+
         [Display(Name = "First Name")]
         public string FirstMidName { get; init; }
 
@@ -78,11 +78,11 @@ public class Delete : PageModel
             _configuration = configuration;
         }
 
-        public Task<Command> Handle(Query message, CancellationToken token) => _db
-            .Instructors
-            .Where(i => i.Id == message.Id)
-            .ProjectTo<Command>(_configuration)
-            .SingleOrDefaultAsync(token);
+        public Task<Command> Handle(Query message, CancellationToken token) =>
+            _db
+                .Instructors.Where(i => i.Id == message.Id)
+                .ProjectTo<Command>(_configuration)
+                .SingleOrDefaultAsync(token);
     }
 
     public class CommandHandler : IRequestHandler<Command>
@@ -93,8 +93,8 @@ public class Delete : PageModel
 
         public async Task Handle(Command message, CancellationToken token)
         {
-            var instructor = await _db.Instructors
-                .Include(i => i.OfficeAssignment)
+            var instructor = await _db
+                .Instructors.Include(i => i.OfficeAssignment)
                 .Where(i => i.Id == message.Id)
                 .SingleAsync(token);
 
@@ -102,8 +102,8 @@ public class Delete : PageModel
 
             _db.Instructors.Remove(instructor);
 
-            var department = await _db.Departments
-                .Where(d => d.InstructorId == message.Id)
+            var department = await _db
+                .Departments.Where(d => d.InstructorId == message.Id)
                 .SingleOrDefaultAsync(token);
             if (department != null)
             {
