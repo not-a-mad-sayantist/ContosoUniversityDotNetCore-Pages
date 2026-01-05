@@ -3,16 +3,25 @@
   "isRoot": true,
   "tools": {
     "grate": {
-      "version": "1.2.0",
+      "version": "2.0.5",
       "commands": [
         "grate"
-      ]
+      ],
+      "rollForward": false
     },
     "gitversion.tool": {
       "version": "5.2.4",
       "commands": [
         "dotnet-gitversion"
-      ]
+      ],
+      "rollForward": false
+    },
+    "csharpier": {
+      "version": "1.2.5",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
     }
   }
 }
